@@ -64,41 +64,36 @@ const images = [
   },
 ];
 
-const gallery = document.querySelector(".gallery");
 
-const galleryItemsHTML = images
-  .map(
-    ({ preview, original, description }) =>
-      `<li class="gallery-item">
-<a class="gallery-link" href="${original}">
-  <img
-    class="gallery-image"
-    src="${preview}"
-    data-source="${original}"
-    alt="${description}"
-  />
-</a>
-</li>
-`
-  )
-  .join(" ");
-gallery.insertAdjacentHTML("beforeend", galleryItemsHTML);
 
-gallery.addEventListener("click", onImageClick);
-function onImageClick(evt) {
-  evt.preventDefault();
-  console.log("клік по:", evt.target);
-  const galleryLink = evt.target.closest(".gallery-link");
-  if (galleryLink) {
-    const largeImageSource = galleryLink.getAttribute("href");
-    const descriptionImg = galleryLink.getAttribute("alt");
-    const instance = basicLightbox.create(`
-<img
-class="gallery-image"
-src="${largeImageSource}"
-alt="${descriptionImg}"
-/>
-`);
-    instance.show();
+const galleryRef = document.querySelector('.gallery');
+const galleryItemsMarkup = images
+  .map(({ preview, original, description }) => {
+    return `
+      <li class="gallery-item">
+        <a class="gallery-link" href="${original}">
+          <img class="gallery-image" src="${preview}" data-source="${original}" alt="${description}" />
+        </a>
+      </li>
+    `;
+  })
+  .join('');
+
+galleryRef.insertAdjacentHTML('beforeend', galleryItemsMarkup);
+
+galleryRef.addEventListener('click', onGalleryItemClick);
+
+function onGalleryItemClick(event) {
+  event.preventDefault();
+  
+  if (event.target.nodeName !== 'IMG') {
+    return;
   }
+  
+  const largeImageUrl = event.target.dataset.source;
+  const instance = basicLightbox.create(`
+    <img src="${largeImageUrl}" width="800" height="600">
+  `);
+
+  instance.show();
 }
